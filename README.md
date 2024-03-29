@@ -1,7 +1,7 @@
 # Farmassist IoT Device Simulator
 
-*[Ray Jasson](mailto:holmesqueen2070@yahoo.com)*<br>
-*31/01/2021*<br>
+*[Gilles Momeni](mailto:gillemomeni@gmail.com)*<br>
+This simulation is comming from the farm assist data simulator which i am the autor<br>
 
 <br>
 
