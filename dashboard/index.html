@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FarmAssist Dashboard</title>
+  <link rel="shortcut icon" href="/img/favicon.jpg" type="image/x-icon">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <!-- Login Modal -->
+  <div id="loginModal" class="login-modal">
+    <div class="login-form">
+      <h2>🌾 FarmAssist Login</h2>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="user@example.com" value="admin@farmassist.io">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="password" value="admin123">
+      </div>
+      <button class="btn" onclick="login()">Login</button>
+      <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: var(--text-secondary);">
+        Default: admin@farmassist.io / admin123
+      </p>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="logo-icon">🌾</div>
+      <div class="logo-text">FarmAssist Dashboard</div>
+    </div>
+    <div class="connection-status">
+      <span class="status-dot connecting" id="wsStatusDot"></span>
+      <span id="wsStatusText">Connecting...</span>
+      <span style="margin-left: 1rem; color: var(--text-secondary);">|</span>
+      <span style="margin-left: 1rem;">WS: <span id="wsClients">0</span></span>
+      <span style="margin-left: 1rem; color: var(--text-secondary);">|</span>
+      <span style="margin-left: 1rem;">Messages: <span id="msgCount">0</span></span>
+    </div>
+  </header>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Devices</div>
+        <div class="stat-value" id="totalDevices">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Farms</div>
+        <div class="stat-value" id="totalFarms">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Telemetry Points</div>
+        <div class="stat-value" id="telemetryCount">-</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active Alerts</div>
+        <div class="stat-value" id="activeAlerts" style="color: var(--danger);">-</div>
+      </div>
+    </div>
+
+    <!-- Dashboard Grid -->
+    <div class="dashboard-grid">
+      <!-- Devices Panel -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📡 Live Devices</div>
+          <span style="font-size: 0.875rem; color: var(--text-secondary);">Real-time telemetry</span>
+        </div>
+        <div class="card-body">
+          <div class="device-grid" id="devicesContainer">
+            <div style="padding: 2rem; text-align: center; color: var(--text-secondary);">Loading devices...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerts Panel -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚠️ Active Alerts</div>
+          <span style="font-size: 0.875rem; color: var(--text-secondary);" id="alertsCount">0 alerts</span>
+        </div>
+        <div class="card-body">
+          <div class="alerts-list" id="alertsContainer">
+            <div style="padding: 2rem; text-align: center; color: var(--text-secondary);">No active alerts</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telemetry Log -->
+      <div class="card" style="grid-column: 1 / -1;">
+        <div class="card-header">
+          <div class="card-title">📊 Recent Telemetry</div>
+          <span style="font-size: 0.875rem; color: var(--text-secondary);">Last 50 messages</span>
+        </div>
+        <div class="card-body">
+          <div class="telemetry-log" id="telemetryLog">
+            <div style="padding: 2rem; text-align: center; color: var(--text-secondary);">Waiting for telemetry data...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script src="index.js"></script>
+</body>
+</html>

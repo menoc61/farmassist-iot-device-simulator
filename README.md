@@ -1,72 +1,443 @@
-# Farmassist IoT Device Simulator
+# FarmAssist - Windows Setup Guide
 
-## :satellite: IoT Device Simulation
+Complete step-by-step guide to set up FarmAssist IoT Simulation Platform on Windows.
 
-This is a minimal IoT device simulator built using [Node-RED](https://nodered.org/). It sends telemetry data to [Firebase Realtime Database](https://firebase.google.com/docs/database) for Farmassist app. There are 5 types of telemetry data:
-- Air Humidity (%)
-- Air Temperature (°C)
-- Soil Moisture (%)
-- Soil pH (pH)
-- Soil Salinity (Millisiemens/cm)
+---
 
-<p align=center><img src="/docs/img/nodes.png"></p>
-<p align="center"><i>Connected Nodes in Node-RED editor</i></p>
+## 📋 Prerequisites
 
-<br>
-<p align=center><img src="/docs/img/firebase_data_schema.png"></p>
-<p align="center"><i>how should your firebase realtime database look like</i></p>
+### Required Software
 
-<br>
+1. **Node.js 18+** - Download from https://nodejs.org/
+2. **PostgreSQL 15+** - Download from https://www.postgresql.org/download/windows/
+3. **MQTT Broker (Mosquitto)** - Download from https://mosquitto.org/download/
+4. **Node-RED** - Will be installed via npm
 
-<p align=center><img src="/docs/img/ui.png"></p>
-<p align="center"><i>UI Dashboard of the IoT Device Simulator</i></p>
+### Verify Installations
 
-<br>
+Open PowerShell or Command Prompt and run:
 
-## :computer: How to Run the IoT Device Simulator
+```powershell
+# Check Node.js
+node --version    # Should show v18.x.x or higher
+npm --version     # Should show 9.x.x or higher
 
-The IoT device simulator is a Node-RED flow stored using JSON. The functions are written in JavaScript.
+# Check PostgreSQL (after installation)
+psql --version
 
-### Run the Node-RED flow locally
+# Check Mosquitto (after installation)
+mosquitto -h
+```
 
-- To run the simulator locally, you will need a supported version of Node.js and Node-RED editor.
-- To install Node.js, download the recent version from [here](https://nodejs.org/en/download/).
-- To install Node-RED editor, run:
+---
 
-  ```bash
-  npm install -g --unsafe-perm node-red
-  ```
+## 🗄️ Step 1: Setup PostgreSQL Database
 
-- Open Node-RED editor by running:
+### 1.1 Install PostgreSQL
 
-  ```bash
-  node-red start
-  ```
+1. Download PostgreSQL installer from https://www.postgresql.org/download/windows/
+2. Run the installer with default settings
+3. **Remember the password you set for postgres user!**
+4. Keep the default port: `5432`
 
-- Open [http://localhost:1880](http://localhost:1880) to view the editor in the browser.
-- 2 extra node modules: `node-red-dashboard` and `node-red-contrib-firebase-data`, are required to run the simulator. `node-red-dashboard` is used to create a dashboard, whereas `node-red-contrib-firebase-data` is used to connect the nodes to Firebase Realtime Database. To install them, run:
+### 1.2 Create Database
 
- ```bash
-  npm install node-red-dashboard
-  npm install node-red-contrib-firebase-data
-  ```
+Open **pgAdmin** (installed with PostgreSQL) or use psql:
 
-- Download the JSON file and import it into the Node-RED editor. You will see the import option at the upper-right corner of the editor.
+```sql
+-- Connect to PostgreSQL
+-- Default: user=postgres, password=farmassist_dev
 
-### Customize the simulator
+-- Create database
+CREATE DATABASE farmassist;
 
-- You need to add your Realtime Database URL into the configuration node. You can find the URL in the Realtime Database section of your Firebase console. The configuration node :gear: is located at the third option in the right panel.
-- Double-click `Add Firebase` node to configure your Firebase URL and set the child path to where the telemetry data is stored in the database. Also, there are several methods for you to write data into Realtime Database, for example, `set`, `push` or `update`. The default method in the JSON file is `update`.
-- Remember to click "Deploy" to save your configurations.
-- Open the dashboard, and use the sliders to select the range of the telemetry data you would want to send.
-- Toggle the switch to start/stop sending the telemetry data.
+-- Create user (optional, can use postgres)
+CREATE USER farmassist WITH ENCRYPTED PASSWORD 'farmassist_dev';
+GRANT ALL PRIVILEGES ON DATABASE farmassist TO farmassist;
+```
 
->use the `docker run -it -p 1880:1880 -v node_red_data:/data --name farmassist-iot-simulation nodered/node-red` to lunch the docker app for red node.
+### 1.3 Install TimescaleDB (Optional but Recommended)
 
-<br>
+1. Download TimescaleDB for Windows: https://docs.timescale.com/self-hosted/latest/install/installation-windows/
+2. Follow the installation wizard
+3. Enable in your database:
 
-## :black_nib: References
+```sql
+\c farmassist
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+```
 
-- [A YouTube tutorial teaching you how to build a Node-RED IoT Device Simulator](https://www.youtube.com/watch?v=2GcVvD08nGE)
-- [Reference for types of telemetry data from Microsoft Azure Virtual Hackathon 2020 in Asia Pacific](https://news.microsoft.com/apac/2020/08/20/drones-data-science-and-innovation-at-the-microsoft-azure-virtual-hackathon-in-asia-pacific/)
-- [IoT Application using Node Red & Google Firebase | Raspberry Pi](https://www.youtube.com/watch?v=IItfEkeh9cA&t=144s)
+---
+
+## 📡 Step 2: Setup MQTT Broker (Mosquitto)
+
+### 2.1 Install Mosquitto
+
+1. Download from https://mosquitto.org/download/
+2. Install with default settings
+3. Add to PATH: `C:\Program Files\Mosquitto`
+
+### 2.2 Configure Mosquitto
+
+Edit `C:\Program Files\Mosquitto\mosquitto.conf`:
+
+```conf
+# Listener configuration
+listener 1883
+allow_anonymous true
+
+# WebSocket listener (optional)
+listener 9001
+protocol websockets
+allow_anonymous true
+
+# Logging
+log_dest file C:\Program Files\Mosquitto\log\mosquitto.log
+log_type all
+
+# Persistence
+persistence true
+persistence_location C:\Program Files\Mosquitto\data\
+```
+
+Create the log directory:
+```powershell
+mkdir "C:\Program Files\Mosquitto\log"
+```
+
+### 2.3 Start Mosquitto
+
+**Option A: Run as Service (Recommended)**
+
+```powershell
+# Open PowerShell as Administrator
+sc create mosquitto binPath= "C:\Program Files\Mosquitto\mosquitto.exe" start= auto
+sc start mosquitto
+```
+
+**Option B: Run Manually**
+
+```powershell
+cd "C:\Program Files\Mosquitto"
+mosquitto -c mosquitto.conf -v
+```
+
+### 2.4 Test MQTT
+
+Open two PowerShell windows:
+
+```powershell
+# Window 1: Subscribe
+mosquitto_sub -t "test/topic" -v
+
+# Window 2: Publish
+mosquitto_pub -t "test/topic" -m "Hello MQTT"
+```
+
+---
+
+## 🔧 Step 3: Setup Backend
+
+### 3.1 Navigate to Backend Folder
+
+```powershell
+cd C:\path\to\farmassist-win\backend
+```
+
+### 3.2 Install Dependencies
+
+```powershell
+npm install
+```
+
+### 3.3 Configure Environment
+
+Edit `.env` file:
+
+```env
+# Server
+PORT=3000
+NODE_ENV=development
+
+# Database (update with your PostgreSQL credentials)
+DATABASE_URL=postgresql://postgres:farmassist_dev@localhost:5432/farmassist
+
+# JWT Secret (generate a random string, minimum 32 characters)
+JWT_SECRET=your-super-secret-key-change-this-in-production-32-chars
+
+# MQTT Broker
+MQTT_BROKER_URL=mqtt://localhost:1883
+```
+
+### 3.4 Setup Database Schema
+
+```powershell
+# Generate Prisma client
+npx prisma generate
+
+# Push schema to database
+npx prisma db push
+
+# (Optional) Open Prisma Studio to view/edit data
+npx prisma studio
+```
+
+### 3.5 Start Backend
+
+```powershell
+# Development mode (auto-restart on changes)
+npm run dev
+
+# OR Production mode
+npm start
+```
+
+You should see:
+```
+🌾 FarmAssist Backend running on port 3000
+📊 Health: http://localhost:3000/health
+🔌 WebSocket: ws://localhost:3000/ws
+✅ Database connected
+[MQTT] Connected to broker
+```
+
+---
+
+## 🎛️ Step 4: Setup Node-RED Simulation
+
+### 4.1 Install Node-RED
+
+```powershell
+# Install globally
+npm install -g node-red
+
+# Verify installation
+node-red --version
+```
+
+### 4.2 Start Node-RED
+
+```powershell
+node-red
+```
+
+Node-RED will start on http://localhost:1880
+
+### 4.3 Import FarmAssist Flows
+
+1. Open http://localhost:1880 in your browser
+2. Click the **Menu** (☰) → **Import** → **Clipboard**
+3. Copy the content from `node-red-flows/farmassist-simulation.json`
+4. Paste into the import dialog
+5. Click **Import**
+6. Click **Deploy**
+
+### 4.4 Configure MQTT in Node-RED
+
+The flow uses MQTT broker at `localhost:1883`. If your Mosquitto is running, it should connect automatically.
+
+Check the MQTT node status - it should show "connected".
+
+---
+
+## 🌐 Step 5: Open Dashboard
+
+Simply open `dashboard/index.html` in your browser:
+
+```
+file:///C:/path/to/farmassist-win/dashboard/index.html
+```
+
+Or serve it with any static server:
+
+```powershell
+# Using Python (if installed)
+cd dashboard
+python -m http.server 8080
+
+# Then open http://localhost:8080
+```
+
+---
+
+## 🚀 Quick Start Summary
+
+Once everything is set up, here's your daily workflow:
+
+### 1. Start PostgreSQL
+```powershell
+# If running as service (should auto-start)
+sc query postgresql-x64-15
+
+# Or start manually
+net start postgresql-x64-15
+```
+
+### 2. Start Mosquitto
+```powershell
+# If running as service
+sc start mosquitto
+
+# Or manually
+cd "C:\Program Files\Mosquitto"
+mosquitto -c mosquitto.conf -v
+```
+
+### 3. Start Backend
+```powershell
+cd C:\path\to\farmassist-win\backend
+npm run dev
+```
+
+### 4. Start Node-RED
+```powershell
+node-red
+```
+
+### 5. Open Dashboard
+Open `dashboard/index.html` in your browser.
+
+---
+
+## 📁 Project Structure
+
+```
+farmassist-win/
+├── backend/
+│   ├── src/
+│   │   └── index.js          # Main server
+│   ├── prisma/
+│   │   └── schema.prisma     # Database schema
+│   ├── .env                  # Configuration
+│   └── package.json
+├── dashboard/
+│   └── index.html            # Web dashboard
+├── docs/
+│   └── SETUP.md              # This file
+└── node-red-flows/
+    └── farmassist-simulation.json  # Simulation flows
+```
+
+---
+
+## 🔍 Troubleshooting
+
+### PostgreSQL Connection Failed
+
+```powershell
+# Check if PostgreSQL is running
+sc query postgresql-x64-15
+
+# Start it
+net start postgresql-x64-15
+
+# Test connection
+psql -U postgres -d farmassist -c "SELECT 1"
+```
+
+### MQTT Connection Failed
+
+```powershell
+# Check if Mosquitto is running
+tasklist | findstr mosquitto
+
+# Check logs
+type "C:\Program Files\Mosquitto\log\mosquitto.log"
+
+# Test with mosquitto_sub/mosquitto_pub
+```
+
+### Backend Won't Start
+
+```powershell
+# Check if port 3000 is in use
+netstat -ano | findstr :3000
+
+# Check database connection string in .env
+# Ensure PostgreSQL is running
+# Run: npx prisma db push
+```
+
+### Node-RED Won't Start
+
+```powershell
+# Check if port 1880 is in use
+netstat -ano | findstr :1880
+
+# Clear Node-RED data (WARNING: removes all flows)
+rd /s /q %USERPROFILE%\.node-red
+```
+
+---
+
+## 🌐 Access URLs
+
+| Service | URL |
+|---------|-----|
+| Dashboard | `file:///C:/.../dashboard/index.html` or `http://localhost:8080` |
+| Backend API | http://localhost:3000 |
+| Backend Health | http://localhost:3000/health |
+| WebSocket | ws://localhost:3000/ws |
+| Node-RED | http://localhost:1880 |
+| MQTT | mqtt://localhost:1883 |
+| Prisma Studio | http://localhost:5555 (when running) |
+
+---
+
+## 📊 Default Login
+
+- **Email**: admin@farmassist.io
+- **Password**: admin123
+
+*(Change this in production!)*
+
+---
+
+## 🔄 Data Flow
+
+```
+┌─────────────┐     MQTT      ┌─────────────┐     HTTP/WS     ┌─────────────┐
+│  Node-RED   │ ────────────► │   Backend   │ ──────────────► │  Dashboard  │
+│ Simulation  │  localhost:1883  localhost:3000                │   (Browser) │
+└─────────────┘               └─────────────┘                  └─────────────┘
+                                     │
+                                     ▼
+                              ┌─────────────┐
+                              │  PostgreSQL │
+                              │  localhost  │
+                              └─────────────┘
+```
+
+---
+
+## 🛠️ Useful Commands
+
+```powershell
+# Restart all services
+net stop mosquitto; net start mosquitto
+net stop postgresql-x64-15; net start postgresql-x64-15
+
+# View backend logs
+cd backend
+npm run dev
+
+# Reset database (WARNING: deletes all data!)
+npx prisma db push --force-reset
+
+# Backup database
+pg_dump -U postgres -d farmassist > backup.sql
+
+# Restore database
+psql -U postgres -d farmassist < backup.sql
+```
+
+---
+
+## 📞 Support
+
+If you encounter issues:
+
+1. Check all services are running
+2. Verify ports are not blocked by firewall
+3. Check logs in each component
+4. Ensure all environment variables are set correctly

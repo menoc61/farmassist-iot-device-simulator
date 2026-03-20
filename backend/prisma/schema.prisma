@@ -1,0 +1,120 @@
+// FarmAssist Database Schema
+// PostgreSQL with TimescaleDB for time-series data
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(uuid())
+  userId      String    @unique
+  email       String    @unique
+  passwordHash String
+  name        String?
+  role        String    @default("user")
+  farms       Farm[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Farm {
+  id          String    @id @default(uuid())
+  farmId      String    @unique
+  name        String
+  location    String?
+  farmType    String    // horizontal, vertical
+  crop        String?
+  userId      String
+  user        User      @relation(fields: [userId], references: [userId])
+  devices     Device[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Device {
+  id          String      @id @default(uuid())
+  deviceId    String      @unique
+  name        String
+  farmId      String
+  farm        Farm        @relation(fields: [farmId], references: [farmId])
+  deviceType  String      // horizontal_sensor, vertical_sensor
+  zone        String?
+  status      String      @default("offline")
+  lastSeenAt  DateTime?
+  telemetry   Telemetry[]
+  alerts      Alert[]
+  commands    Command[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Telemetry {
+  id            String    @id @default(uuid())
+  time          DateTime  @default(now())
+  deviceId      String
+  device        Device    @relation(fields: [deviceId], references: [deviceId])
+  
+  // Horizontal sensors
+  tempAir       Float?
+  humidity      Float?
+  lightLux      Float?
+  tempSoil      Float?
+  moisture1     Float?
+  moisture2     Float?
+  soilPh        Float?
+  salinity      Float?
+  
+  // Vertical sensors
+  flowLph       Float?
+  waterTemp     Float?
+  ecSolution    Float?
+  phSolution    Float?
+  doMgl         Float?
+  waterLevelPct Float?
+  
+  // Actuators
+  irrigation    Boolean?
+  pump          Boolean?
+  ventilation   Boolean?
+  growLight     Boolean?
+  
+  // Metadata
+  batteryPct    Float?
+  wifiRssi      Int?
+  
+  @@index([time])
+  @@index([deviceId, time])
+}
+
+model Alert {
+  id            String    @id @default(uuid())
+  alertId       String    @unique
+  deviceId      String
+  device        Device    @relation(fields: [deviceId], references: [deviceId])
+  alertType     String
+  severity      String    // info, warning, critical
+  status        String    @default("active")
+  message       String
+  sensorValue   Float?
+  threshold     Float?
+  createdAt     DateTime  @default(now())
+  resolvedAt    DateTime?
+}
+
+model Command {
+  id            String    @id @default(uuid())
+  cmdId         String    @unique
+  deviceId      String
+  device        Device    @relation(fields: [deviceId], references: [deviceId])
+  command       String
+  params        Json?
+  status        String    @default("pending")
+  issuedAt      DateTime  @default(now())
+  executedAt    DateTime?
+  response      String?
+}
