@@ -1,0 +1,586 @@
+{
+  "version": "1.0",
+  "project": {
+    "name": "FarmAssist+ Vertical Farm Kit (V1)",
+    "description": "NFT Hydroponic System for Lettuce - GCD4F 2026",
+    "author": "FarmAssist+ Team",
+    "created": "2026-03-20"
+  },
+  "components": [
+    {
+      "id": "esp32",
+      "type": "ESP32-DevKitC-32E",
+      "name": "Main Controller",
+      "position": {"x": 400, "y": 300},
+      "rotation": 0,
+      "properties": {
+        "model": "ESP32-WROOM-32E",
+        "voltage": "3.3V",
+        "frequency": "240MHz",
+        "flash": "4MB",
+        "sram": "520KB",
+        "wifi": "802.11 b/g/n",
+        "bluetooth": "BLE 4.2"
+      }
+    },
+    {
+      "id": "dht22",
+      "type": "DHT22",
+      "name": "Air Temp/Humidity Sensor",
+      "position": {"x": 200, "y": 100},
+      "rotation": 0,
+      "properties": {
+        "model": "AM2302",
+        "temp_range": "-40 to 80°C",
+        "humidity_range": "0-100% RH",
+        "accuracy_temp": "±0.5°C",
+        "accuracy_humidity": "±2% RH"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "DATA": ["DATA"]
+      }
+    },
+    {
+      "id": "ds18b20",
+      "type": "DS18B20",
+      "name": "Water Temperature Sensor",
+      "position": {"x": 200, "y": 200},
+      "rotation": 0,
+      "properties": {
+        "model": "DS18B20",
+        "temp_range": "-55 to 125°C",
+        "accuracy": "±0.5°C",
+        "interface": "1-Wire",
+        "resolution": "9-12 bits (configurable)",
+        "waterproof": "Yes (stainless steel probe)"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "DQ": ["DQ"]
+      }
+    },
+    {
+      "id": "water_ph",
+      "type": "Gravity pH Sensor",
+      "name": "Water pH Sensor",
+      "position": {"x": 200, "y": 300},
+      "rotation": 0,
+      "properties": {
+        "model": "Gravity Analog pH Sensor",
+        "range": "0-14 pH",
+        "accuracy": "±0.1 pH @ 25°C",
+        "output": "Analog 0-3.3V",
+        "temperature_compensation": "Manual",
+        "waterproof": "Yes (glass electrode)"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "PO": ["PO"]
+      }
+    },
+    {
+      "id": "tds_sensor",
+      "type": "Gravity TDS Sensor",
+      "name": "TDS/EC Sensor",
+      "position": {"x": 200, "y": 400},
+      "rotation": 0,
+      "properties": {
+        "model": "Gravity Analog TDS Sensor",
+        "range": "0-1000 ppm",
+        "accuracy": "±10%",
+        "output": "Analog 0-2.3V",
+        "temperature_compensation": "Yes (via software)",
+        "measures": "Total Dissolved Solids, Electrical Conductivity"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "AOUT": ["AOUT"]
+      }
+    },
+    {
+      "id": "hcsr04",
+      "type": "HC-SR04",
+      "name": "Water Level Sensor",
+      "position": {"x": 200, "y": 500},
+      "rotation": 0,
+      "properties": {
+        "model": "HC-SR04",
+        "range": "2-400 cm",
+        "accuracy": "±3 mm",
+        "frequency": "40 kHz",
+        "trigger_signal": "10µs TTL pulse",
+        "echo_signal": "Proportional to distance"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "TRIG": ["TRIG"],
+        "ECHO": ["ECHO"]
+      }
+    },
+    {
+      "id": "bh1750",
+      "type": "BH1750",
+      "name": "Light Intensity Sensor",
+      "position": {"x": 600, "y": 100},
+      "rotation": 0,
+      "properties": {
+        "model": "BH1750FVI",
+        "range": "1-65535 lux",
+        "accuracy": "±20%",
+        "interface": "I2C",
+        "i2c_address": "0x23",
+        "purpose": "PAR estimation for photosynthesis"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "SDA": ["SDA"],
+        "SCL": ["SCL"],
+        "ADDR": ["ADDR"]
+      }
+    },
+    {
+      "id": "do_sensor",
+      "type": "Gravity Dissolved Oxygen Sensor",
+      "name": "Dissolved Oxygen Sensor",
+      "position": {"x": 600, "y": 200},
+      "rotation": 0,
+      "properties": {
+        "model": "Gravity Analog DO Sensor",
+        "range": "0-20 mg/L",
+        "accuracy": "±0.3 mg/L",
+        "output": "Analog 0-3.3V",
+        "temperature_compensation": "Yes (via software)",
+        "critical": "Root health monitoring"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "AOUT": ["AOUT"]
+      }
+    },
+    {
+      "id": "relay_module",
+      "type": "4-Channel Relay Module",
+      "name": "Actuator Controller",
+      "position": {"x": 600, "y": 400},
+      "rotation": 0,
+      "properties": {
+        "model": "4-Channel 5V Relay",
+        "voltage": "5V DC",
+        "current": "10A per channel",
+        "type": "Normally Open",
+        "channels": 4,
+        "uses": [
+          "Ch1: Nutrient Pump",
+          "Ch2: pH Up Dosing",
+          "Ch3: pH Down Dosing",
+          "Ch4: Grow Light"
+        ]
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "IN1": ["IN1"],
+        "IN2": ["IN2"],
+        "IN3": ["IN3"],
+        "IN4": ["IN4"]
+      }
+    },
+    {
+      "id": "buzzer",
+      "type": "Active Buzzer",
+      "name": "Alert Buzzer",
+      "position": {"x": 600, "y": 500},
+      "rotation": 0,
+      "properties": {
+        "voltage": "5V",
+        "type": "Active",
+        "frequency": "2300Hz",
+        "alerts": "Low water, pH out of range, pump failure"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"]
+      }
+    },
+    {
+      "id": "power_supply",
+      "type": "12V Power Supply",
+      "name": "Main Power",
+      "position": {"x": 100, "y": 300},
+      "rotation": 0,
+      "properties": {
+        "voltage": "12V DC",
+        "current": "5A",
+        "type": "AC/DC Adapter",
+        "note": "Grid power for urban vertical farms"
+      },
+      "pins": {
+        "12V+": ["12V+"],
+        "GND": ["GND"]
+      }
+    },
+    {
+      "id": "buck_converter",
+      "type": "LM2596 Buck Converter",
+      "name": "5V Regulator",
+      "position": {"x": 100, "y": 400},
+      "rotation": 0,
+      "properties": {
+        "input": "4.5-40V DC",
+        "output": "5V DC (adjusted)",
+        "current": "3A max",
+        "efficiency": "92%"
+      },
+      "pins": {
+        "IN+": ["IN+"],
+        "IN-": ["IN-"],
+        "OUT+": ["OUT+"],
+        "OUT-": ["OUT-"]
+      }
+    },
+    {
+      "id": "rtc_module",
+      "type": "DS3231",
+      "name": "Real-Time Clock",
+      "position": {"x": 600, "y": 300},
+      "rotation": 0,
+      "properties": {
+        "model": "DS3231",
+        "accuracy": "±2 ppm",
+        "interface": "I2C",
+        "i2c_address": "0x68",
+        "battery": "CR2032 backup",
+        "purpose": "Timestamping when WiFi unavailable"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "SDA": ["SDA"],
+        "SCL": ["SCL"]
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn1",
+      "from": {"component": "power_supply", "pin": "12V+"},
+      "to": {"component": "buck_converter", "pin": "IN+"},
+      "wire": {"color": "red", "gauge": "18AWG"}
+    },
+    {
+      "id": "conn2",
+      "from": {"component": "power_supply", "pin": "GND"},
+      "to": {"component": "buck_converter", "pin": "IN-"},
+      "wire": {"color": "black", "gauge": "18AWG"}
+    },
+    {
+      "id": "conn3",
+      "from": {"component": "buck_converter", "pin": "OUT+"},
+      "to": {"component": "esp32", "pin": "5V"},
+      "wire": {"color": "red", "gauge": "22AWG"},
+      "note": "Adjust buck converter to 5V"
+    },
+    {
+      "id": "conn4",
+      "from": {"component": "buck_converter", "pin": "OUT-"},
+      "to": {"component": "esp32", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "22AWG"}
+    },
+    {
+      "id": "conn5",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "dht22", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn6",
+      "from": {"component": "esp32", "pin": "GND"},
+      "to": {"component": "dht22", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn7",
+      "from": {"component": "esp32", "pin": "GPIO4"},
+      "to": {"component": "dht22", "pin": "DATA"},
+      "wire": {"color": "green", "gauge": "24AWG"},
+      "note": "10K pull-up resistor to VCC"
+    },
+    {
+      "id": "conn8",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "ds18b20", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn9",
+      "from": {"component": "esp32", "pin": "GND"},
+      "to": {"component": "ds18b20", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn10",
+      "from": {"component": "esp32", "pin": "GPIO5"},
+      "to": {"component": "ds18b20", "pin": "DQ"},
+      "wire": {"color": "yellow", "gauge": "24AWG"},
+      "note": "4.7K pull-up resistor to VCC for 1-Wire"
+    },
+    {
+      "id": "conn11",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "water_ph", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn12",
+      "from": {"component": "esp32", "pin": "GND"},
+      "to": {"component": "water_ph", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn13",
+      "from": {"component": "esp32", "pin": "GPIO34"},
+      "to": {"component": "water_ph", "pin": "PO"},
+      "wire": {"color": "blue", "gauge": "24AWG"},
+      "note": "GPIO34 input-only, ADC1_CH6"
+    },
+    {
+      "id": "conn14",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "tds_sensor", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn15",
+      "from": {"component": "esp32", "pin": "GND"},
+      "to": {"component": "tds_sensor", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn16",
+      "from": {"component": "esp32", "pin": "GPIO35"},
+      "to": {"component": "tds_sensor", "pin": "AOUT"},
+      "wire": {"color": "purple", "gauge": "24AWG"},
+      "note": "GPIO35 input-only, ADC1_CH7"
+    },
+    {
+      "id": "conn17",
+      "from": {"component": "buck_converter", "pin": "OUT+"},
+      "to": {"component": "hcsr04", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"},
+      "note": "HC-SR04 requires 5V"
+    },
+    {
+      "id": "conn18",
+      "from": {"component": "buck_converter", "pin": "OUT-"},
+      "to": {"component": "hcsr04", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn19",
+      "from": {"component": "esp32", "pin": "GPIO12"},
+      "to": {"component": "hcsr04", "pin": "TRIG"},
+      "wire": {"color": "green", "gauge": "24AWG"},
+      "note": "Trigger pulse output"
+    },
+    {
+      "id": "conn20",
+      "from": {"component": "hcsr04", "pin": "ECHO"},
+      "to": {"component": "esp32", "pin": "GPIO13"},
+      "wire": {"color": "blue", "gauge": "24AWG"},
+      "note": "Echo via voltage divider (5V to 3.3V)"
+    },
+    {
+      "id": "conn21",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "bh1750", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn22",
+      "from": {"component": "esp32", "pin": "GND"},
+      "to": {"component": "bh1750", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn23",
+      "from": {"component": "esp32", "pin": "GPIO21"},
+      "to": {"component": "bh1750", "pin": "SDA"},
+      "wire": {"color": "blue", "gauge": "24AWG"},
+      "note": "I2C SDA with 4.7K pull-up"
+    },
+    {
+      "id": "conn24",
+      "from": {"component": "esp32", "pin": "GPIO22"},
+      "to": {"component": "bh1750", "pin": "SCL"},
+      "wire": {"color": "yellow", "gauge": "24AWG"},
+      "note": "I2C SCL with 4.7K pull-up"
+    },
+    {
+      "id": "conn25",
+      "from": {"component": "bh1750", "pin": "ADDR"},
+      "to": {"component": "esp32", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"},
+      "note": "I2C address 0x23"
+    },
+    {
+      "id": "conn26",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "do_sensor", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn27",
+      "from": {"component": "esp32", "pin": "GND"},
+      "to": {"component": "do_sensor", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn28",
+      "from": {"component": "esp32", "pin": "GPIO32"},
+      "to": {"component": "do_sensor", "pin": "AOUT"},
+      "wire": {"color": "cyan", "gauge": "24AWG"},
+      "note": "ADC1_CH4"
+    },
+    {
+      "id": "conn29",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "rtc_module", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn30",
+      "from": {"component": "esp32", "pin": "GND"},
+      "to": {"component": "rtc_module", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn31",
+      "from": {"component": "esp32", "pin": "GPIO21"},
+      "to": {"component": "rtc_module", "pin": "SDA"},
+      "wire": {"color": "blue", "gauge": "24AWG"},
+      "note": "Shared I2C bus"
+    },
+    {
+      "id": "conn32",
+      "from": {"component": "esp32", "pin": "GPIO22"},
+      "to": {"component": "rtc_module", "pin": "SCL"},
+      "wire": {"color": "yellow", "gauge": "24AWG"},
+      "note": "Shared I2C bus"
+    },
+    {
+      "id": "conn33",
+      "from": {"component": "buck_converter", "pin": "OUT+"},
+      "to": {"component": "relay_module", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "22AWG"}
+    },
+    {
+      "id": "conn34",
+      "from": {"component": "buck_converter", "pin": "OUT-"},
+      "to": {"component": "relay_module", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "22AWG"}
+    },
+    {
+      "id": "conn35",
+      "from": {"component": "esp32", "pin": "GPIO25"},
+      "to": {"component": "relay_module", "pin": "IN1"},
+      "wire": {"color": "orange", "gauge": "24AWG"},
+      "note": "Relay 1 - Nutrient Circulation Pump"
+    },
+    {
+      "id": "conn36",
+      "from": {"component": "esp32", "pin": "GPIO26"},
+      "to": {"component": "relay_module", "pin": "IN2"},
+      "wire": {"color": "purple", "gauge": "24AWG"},
+      "note": "Relay 2 - pH Up Dosing Pump"
+    },
+    {
+      "id": "conn37",
+      "from": {"component": "esp32", "pin": "GPIO27"},
+      "to": {"component": "relay_module", "pin": "IN3"},
+      "wire": {"color": "pink", "gauge": "24AWG"},
+      "note": "Relay 3 - pH Down Dosing Pump"
+    },
+    {
+      "id": "conn38",
+      "from": {"component": "esp32", "pin": "GPIO33"},
+      "to": {"component": "relay_module", "pin": "IN4"},
+      "wire": {"color": "brown", "gauge": "24AWG"},
+      "note": "Relay 4 - LED Grow Light (12V)"
+    },
+    {
+      "id": "conn39",
+      "from": {"component": "buck_converter", "pin": "OUT+"},
+      "to": {"component": "buzzer", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn40",
+      "from": {"component": "esp32", "pin": "GPIO23"},
+      "to": {"component": "buzzer", "pin": "GND"},
+      "wire": {"color": "gray", "gauge": "24AWG"},
+      "note": "Control via NPN transistor"
+    }
+  ],
+  "notes": [
+    {
+      "id": "note1",
+      "position": {"x": 100, "y": 50},
+      "text": "FARMASSIST+ VERTICAL FARM KIT (V1)\nNFT Hydroponic System for Lettuce\nMCU: ESP32-DevKitC-32E\nArchitecture: Bun + Hono + Prisma + MQTT\nGCD4F 2026 Competition"
+    },
+    {
+      "id": "note2",
+      "position": {"x": 100, "y": 600},
+      "text": "POWER NOTES:\n- Main: 12V 5A AC/DC adapter (grid)\n- Buck converter: 12V → 5V @ 3A\n- ESP32 3.3V onboard regulator\n- Total draw: ~2.8A @ 12V\n- Battery backup optional for demos"
+    },
+    {
+      "id": "note3",
+      "position": {"x": 300, "y": 600},
+      "text": "I2C BUS DEVICES:\n- BH1750 Light Sensor (0x23)\n- DS3231 RTC Module (0x68)\n- SDA: GPIO21 (4.7K pull-up)\n- SCL: GPIO22 (4.7K pull-up)"
+    },
+    {
+      "id": "note4",
+      "position": {"x": 500, "y": 600},
+      "text": "MQTT TOPICS:\nPublish: farmassist/{user_id}/farm_vertical_004/ARD_V001_001/telemetry\nSubscribe: farmassist/{user_id}/farm_vertical_004/ARD_V001_001/cmd\nPublish Interval: 20 seconds (faster for hydroponics)\nBroker: localhost:1883 (dev)"
+    },
+    {
+      "id": "note5",
+      "position": {"x": 700, "y": 600},
+      "text": "SAFETY FEATURES:\n- Water level < 5cm → Auto pump shutoff\n- pH < 5.5 or > 7.0 → Buzzer alert\n- DO < 4 mg/L → Critical alert\n- Temp > 30°C → Cooling notification\n- All logged to TimescaleDB"
+    },
+    {
+      "id": "note6",
+      "position": {"x": 100, "y": 700},
+      "text": "CALIBRATION:\n- Water pH: pH 4.0, 7.0, 10.0 buffers\n- TDS: 1413 µS/cm solution @ 25°C\n- DO: 0% (sodium sulfite), 100% (air-saturated)\n- Water temp: Ice bath (0°C), Boiling (100°C)\n- Ultrasonic: Known distances"
+    },
+    {
+      "id": "note7",
+      "position": {"x": 300, "y": 700},
+      "text": "OPTIMAL LETTUCE RANGES:\n- pH: 5.5-6.5\n- EC: 1.2-2.0 mS/cm (840-1400 ppm)\n- Water Temp: 18-22°C\n- Air Temp: 16-24°C\n- DO: >5 mg/L\n- Light: 200-400 µmol/m²/s (12-16h/day)"
+    },
+    {
+      "id": "note8",
+      "position": {"x": 500, "y": 700},
+      "text": "VOLTAGE DIVIDER FOR HC-SR04 ECHO:\nESP32 GPIO13 is 3.3V tolerant\nHC-SR04 ECHO outputs 5V\nUse 1KΩ + 2KΩ divider:\n5V → 1KΩ → GPIO13 → 2KΩ → GND\nOutput: 5V * (2K/(1K+2K)) = 3.33V"
+    }
+  ],
+  "metadata": {
+    "total_components": 13,
+    "estimated_cost_xaf": 44500,
+    "estimated_cost_usd": 73,
+    "power_consumption": "35W max",
+    "operating_temp": "15 to 35°C (indoor)",
+    "pcb_size": "180mm x 120mm",
+    "enclosure": "IP44 rated (indoor use)",
+    "farm_type": "NFT Hydroponic",
+    "crop": "Lettuce (Butterhead, Romaine)",
+    "production_cycle": "28-35 days"
+  }
+}

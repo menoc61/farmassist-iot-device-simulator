@@ -1,0 +1,562 @@
+{
+  "version": "1.0",
+  "project": {
+    "name": "FarmAssist+ Horizontal Farm Kit (H1)",
+    "description": "IoT monitoring system for traditional farms (Cacao, Cassava, Groundnut) - GCD4F 2026",
+    "author": "FarmAssist+ Team",
+    "created": "2026-03-20"
+  },
+  "components": [
+    {
+      "id": "esp32",
+      "type": "ESP32-DevKitC-32E",
+      "name": "Main Controller",
+      "position": {"x": 400, "y": 300},
+      "rotation": 0,
+      "properties": {
+        "model": "ESP32-WROOM-32E",
+        "voltage": "3.3V",
+        "frequency": "240MHz",
+        "flash": "4MB",
+        "sram": "520KB",
+        "wifi": "802.11 b/g/n",
+        "bluetooth": "BLE 4.2"
+      },
+      "pins": {
+        "GND": ["GND.1", "GND.2", "GND.3", "GND.4", "GND.5", "GND.6"],
+        "3V3": ["3V3"],
+        "5V": ["5V"],
+        "EN": ["EN"],
+        "GPIO0": ["GPIO0"],
+        "GPIO2": ["GPIO2"],
+        "GPIO4": ["GPIO4"],
+        "GPIO5": ["GPIO5"],
+        "GPIO12": ["GPIO12"],
+        "GPIO13": ["GPIO13"],
+        "GPIO14": ["GPIO14"],
+        "GPIO15": ["GPIO15"],
+        "GPIO16": ["GPIO16"],
+        "GPIO17": ["GPIO17"],
+        "GPIO18": ["GPIO18"],
+        "GPIO19": ["GPIO19"],
+        "GPIO21": ["GPIO21"],
+        "GPIO22": ["GPIO22"],
+        "GPIO23": ["GPIO23"],
+        "GPIO25": ["GPIO25"],
+        "GPIO26": ["GPIO26"],
+        "GPIO27": ["GPIO27"],
+        "GPIO32": ["GPIO32"],
+        "GPIO33": ["GPIO33"],
+        "GPIO34": ["GPIO34"],
+        "GPIO35": ["GPIO35"]
+      }
+    },
+    {
+      "id": "dht22",
+      "type": "DHT22",
+      "name": "Air Temp/Humidity Sensor",
+      "position": {"x": 200, "y": 150},
+      "rotation": 0,
+      "properties": {
+        "model": "AM2302",
+        "temp_range": "-40 to 80°C",
+        "humidity_range": "0-100% RH",
+        "accuracy_temp": "±0.5°C",
+        "accuracy_humidity": "±2% RH"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "DATA": ["DATA"]
+      }
+    },
+    {
+      "id": "soil_moisture",
+      "type": "Capacitive Soil Moisture Sensor",
+      "name": "Soil Moisture",
+      "position": {"x": 200, "y": 250},
+      "rotation": 0,
+      "properties": {
+        "model": "Capacitive v1.2",
+        "output": "Analog 0-3V",
+        "range": "0-100% VWC",
+        "interface": "Analog"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "AOUT": ["AOUT"]
+      }
+    },
+    {
+      "id": "soil_ph",
+      "type": "Analog pH Sensor",
+      "name": "Soil pH Sensor",
+      "position": {"x": 200, "y": 350},
+      "rotation": 0,
+      "properties": {
+        "model": "Gravity pH Sensor",
+        "range": "0-14 pH",
+        "accuracy": "±0.1 pH",
+        "output": "Analog 0-3.3V",
+        "temperature_compensation": "Yes"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "PO": ["PO"]
+      }
+    },
+    {
+      "id": "bh1750",
+      "type": "BH1750",
+      "name": "Light Intensity Sensor",
+      "position": {"x": 200, "y": 450},
+      "rotation": 0,
+      "properties": {
+        "model": "BH1750FVI",
+        "range": "1-65535 lux",
+        "accuracy": "±20%",
+        "interface": "I2C",
+        "i2c_address": "0x23"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "SDA": ["SDA"],
+        "SCL": ["SCL"],
+        "ADDR": ["ADDR"]
+      }
+    },
+    {
+      "id": "npk_sensor",
+      "type": "RS485 NPK Sensor",
+      "name": "NPK Nutrient Sensor",
+      "position": {"x": 600, "y": 150},
+      "rotation": 0,
+      "properties": {
+        "model": "RS485 NPK Sensor",
+        "parameters": "Nitrogen, Phosphorus, Potassium",
+        "range": "0-2000 mg/kg",
+        "interface": "RS485 (Modbus RTU)",
+        "baud_rate": "9600"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "A+": ["A+"],
+        "B-": ["B-"]
+      }
+    },
+    {
+      "id": "rain_gauge",
+      "type": "Tipping Bucket Rain Gauge",
+      "name": "Rainfall Sensor",
+      "position": {"x": 600, "y": 250},
+      "rotation": 0,
+      "properties": {
+        "model": "Tipping Bucket",
+        "resolution": "0.2794 mm/tip",
+        "output": "Digital pulse",
+        "interface": "Digital interrupt"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "OUT": ["OUT"]
+      }
+    },
+    {
+      "id": "relay_module",
+      "type": "4-Channel Relay Module",
+      "name": "Actuator Controller",
+      "position": {"x": 600, "y": 350},
+      "rotation": 0,
+      "properties": {
+        "model": "4-Channel 5V Relay",
+        "voltage": "5V DC",
+        "current": "10A per channel",
+        "type": "Normally Open",
+        "channels": 4
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "IN1": ["IN1"],
+        "IN2": ["IN2"],
+        "IN3": ["IN3"],
+        "IN4": ["IN4"]
+      }
+    },
+    {
+      "id": "buzzer",
+      "type": "Active Buzzer",
+      "name": "Alert Buzzer",
+      "position": {"x": 600, "y": 450},
+      "rotation": 0,
+      "properties": {
+        "voltage": "5V",
+        "type": "Active",
+        "frequency": "2300Hz"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"]
+      }
+    },
+    {
+      "id": "rs485_module",
+      "type": "MAX485 Module",
+      "name": "RS485 Converter",
+      "position": {"x": 600, "y": 50},
+      "rotation": 0,
+      "properties": {
+        "model": "MAX485",
+        "voltage": "5V",
+        "interface": "UART to RS485"
+      },
+      "pins": {
+        "VCC": ["VCC"],
+        "GND": ["GND"],
+        "RO": ["RO"],
+        "RE": ["RE"],
+        "DE": ["DE"],
+        "DI": ["DI"],
+        "A": ["A"],
+        "B": ["B"]
+      }
+    },
+    {
+      "id": "power_supply",
+      "type": "12V Power Supply",
+      "name": "Main Power",
+      "position": {"x": 100, "y": 300},
+      "rotation": 0,
+      "properties": {
+        "voltage": "12V DC",
+        "current": "5A",
+        "type": "AC/DC Adapter"
+      },
+      "pins": {
+        "12V+": ["12V+"],
+        "GND": ["GND"]
+      }
+    },
+    {
+      "id": "buck_converter",
+      "type": "LM2596 Buck Converter",
+      "name": "5V Regulator",
+      "position": {"x": 100, "y": 400},
+      "rotation": 0,
+      "properties": {
+        "input": "4.5-40V DC",
+        "output": "1.25-37V DC (adjustable)",
+        "current": "3A max",
+        "efficiency": "92%"
+      },
+      "pins": {
+        "IN+": ["IN+"],
+        "IN-": ["IN-"],
+        "OUT+": ["OUT+"],
+        "OUT-": ["OUT-"]
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn1",
+      "from": {"component": "power_supply", "pin": "12V+"},
+      "to": {"component": "buck_converter", "pin": "IN+"},
+      "wire": {"color": "red", "gauge": "18AWG"}
+    },
+    {
+      "id": "conn2",
+      "from": {"component": "power_supply", "pin": "GND"},
+      "to": {"component": "buck_converter", "pin": "IN-"},
+      "wire": {"color": "black", "gauge": "18AWG"}
+    },
+    {
+      "id": "conn3",
+      "from": {"component": "buck_converter", "pin": "OUT+"},
+      "to": {"component": "esp32", "pin": "5V"},
+      "wire": {"color": "red", "gauge": "22AWG"},
+      "note": "Adjust buck converter to 5V output"
+    },
+    {
+      "id": "conn4",
+      "from": {"component": "buck_converter", "pin": "OUT-"},
+      "to": {"component": "esp32", "pin": "GND.1"},
+      "wire": {"color": "black", "gauge": "22AWG"}
+    },
+    {
+      "id": "conn5",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "dht22", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn6",
+      "from": {"component": "esp32", "pin": "GND.2"},
+      "to": {"component": "dht22", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn7",
+      "from": {"component": "esp32", "pin": "GPIO4"},
+      "to": {"component": "dht22", "pin": "DATA"},
+      "wire": {"color": "green", "gauge": "24AWG"},
+      "note": "DHT22 data pin with 10K pull-up resistor to VCC"
+    },
+    {
+      "id": "conn8",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "soil_moisture", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn9",
+      "from": {"component": "esp32", "pin": "GND.3"},
+      "to": {"component": "soil_moisture", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn10",
+      "from": {"component": "esp32", "pin": "GPIO34"},
+      "to": {"component": "soil_moisture", "pin": "AOUT"},
+      "wire": {"color": "blue", "gauge": "24AWG"},
+      "note": "Analog input - GPIO34 is input-only"
+    },
+    {
+      "id": "conn11",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "soil_ph", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn12",
+      "from": {"component": "esp32", "pin": "GND.4"},
+      "to": {"component": "soil_ph", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn13",
+      "from": {"component": "esp32", "pin": "GPIO35"},
+      "to": {"component": "soil_ph", "pin": "PO"},
+      "wire": {"color": "yellow", "gauge": "24AWG"},
+      "note": "Analog input - GPIO35 is input-only"
+    },
+    {
+      "id": "conn14",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "bh1750", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn15",
+      "from": {"component": "esp32", "pin": "GND.5"},
+      "to": {"component": "bh1750", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn16",
+      "from": {"component": "esp32", "pin": "GPIO21"},
+      "to": {"component": "bh1750", "pin": "SDA"},
+      "wire": {"color": "blue", "gauge": "24AWG"},
+      "note": "I2C SDA with 4.7K pull-up to 3.3V"
+    },
+    {
+      "id": "conn17",
+      "from": {"component": "esp32", "pin": "GPIO22"},
+      "to": {"component": "bh1750", "pin": "SCL"},
+      "wire": {"color": "yellow", "gauge": "24AWG"},
+      "note": "I2C SCL with 4.7K pull-up to 3.3V"
+    },
+    {
+      "id": "conn18",
+      "from": {"component": "bh1750", "pin": "ADDR"},
+      "to": {"component": "esp32", "pin": "GND.5"},
+      "wire": {"color": "black", "gauge": "24AWG"},
+      "note": "ADDR to GND for I2C address 0x23"
+    },
+    {
+      "id": "conn19",
+      "from": {"component": "buck_converter", "pin": "OUT+"},
+      "to": {"component": "rs485_module", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "22AWG"}
+    },
+    {
+      "id": "conn20",
+      "from": {"component": "buck_converter", "pin": "OUT-"},
+      "to": {"component": "rs485_module", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "22AWG"}
+    },
+    {
+      "id": "conn21",
+      "from": {"component": "esp32", "pin": "GPIO16"},
+      "to": {"component": "rs485_module", "pin": "RO"},
+      "wire": {"color": "orange", "gauge": "24AWG"},
+      "note": "UART RX"
+    },
+    {
+      "id": "conn22",
+      "from": {"component": "esp32", "pin": "GPIO17"},
+      "to": {"component": "rs485_module", "pin": "DI"},
+      "wire": {"color": "purple", "gauge": "24AWG"},
+      "note": "UART TX"
+    },
+    {
+      "id": "conn23",
+      "from": {"component": "esp32", "pin": "GPIO18"},
+      "to": {"component": "rs485_module", "pin": "DE"},
+      "wire": {"color": "gray", "gauge": "24AWG"},
+      "note": "Driver Enable"
+    },
+    {
+      "id": "conn24",
+      "from": {"component": "esp32", "pin": "GPIO18"},
+      "to": {"component": "rs485_module", "pin": "RE"},
+      "wire": {"color": "gray", "gauge": "24AWG"},
+      "note": "Receiver Enable (tied to DE)"
+    },
+    {
+      "id": "conn25",
+      "from": {"component": "rs485_module", "pin": "A"},
+      "to": {"component": "npk_sensor", "pin": "A+"},
+      "wire": {"color": "green", "gauge": "22AWG"},
+      "note": "RS485 A+ differential pair"
+    },
+    {
+      "id": "conn26",
+      "from": {"component": "rs485_module", "pin": "B"},
+      "to": {"component": "npk_sensor", "pin": "B-"},
+      "wire": {"color": "brown", "gauge": "22AWG"},
+      "note": "RS485 B- differential pair"
+    },
+    {
+      "id": "conn27",
+      "from": {"component": "power_supply", "pin": "12V+"},
+      "to": {"component": "npk_sensor", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "22AWG"},
+      "note": "NPK sensor requires 12V"
+    },
+    {
+      "id": "conn28",
+      "from": {"component": "power_supply", "pin": "GND"},
+      "to": {"component": "npk_sensor", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "22AWG"}
+    },
+    {
+      "id": "conn29",
+      "from": {"component": "esp32", "pin": "3V3"},
+      "to": {"component": "rain_gauge", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn30",
+      "from": {"component": "esp32", "pin": "GND.6"},
+      "to": {"component": "rain_gauge", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn31",
+      "from": {"component": "esp32", "pin": "GPIO15"},
+      "to": {"component": "rain_gauge", "pin": "OUT"},
+      "wire": {"color": "white", "gauge": "24AWG"},
+      "note": "Digital pulse input with interrupt"
+    },
+    {
+      "id": "conn32",
+      "from": {"component": "buck_converter", "pin": "OUT+"},
+      "to": {"component": "relay_module", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "22AWG"}
+    },
+    {
+      "id": "conn33",
+      "from": {"component": "buck_converter", "pin": "OUT-"},
+      "to": {"component": "relay_module", "pin": "GND"},
+      "wire": {"color": "black", "gauge": "22AWG"}
+    },
+    {
+      "id": "conn34",
+      "from": {"component": "esp32", "pin": "GPIO25"},
+      "to": {"component": "relay_module", "pin": "IN1"},
+      "wire": {"color": "orange", "gauge": "24AWG"},
+      "note": "Relay 1 - Water Pump"
+    },
+    {
+      "id": "conn35",
+      "from": {"component": "esp32", "pin": "GPIO26"},
+      "to": {"component": "relay_module", "pin": "IN2"},
+      "wire": {"color": "purple", "gauge": "24AWG"},
+      "note": "Relay 2 - Solenoid Valve"
+    },
+    {
+      "id": "conn36",
+      "from": {"component": "esp32", "pin": "GPIO27"},
+      "to": {"component": "relay_module", "pin": "IN3"},
+      "wire": {"color": "pink", "gauge": "24AWG"},
+      "note": "Relay 3 - Cooling Fan"
+    },
+    {
+      "id": "conn37",
+      "from": {"component": "esp32", "pin": "GPIO32"},
+      "to": {"component": "relay_module", "pin": "IN4"},
+      "wire": {"color": "cyan", "gauge": "24AWG"},
+      "note": "Relay 4 - Reserved"
+    },
+    {
+      "id": "conn38",
+      "from": {"component": "buck_converter", "pin": "OUT+"},
+      "to": {"component": "buzzer", "pin": "VCC"},
+      "wire": {"color": "red", "gauge": "24AWG"}
+    },
+    {
+      "id": "conn39",
+      "from": {"component": "esp32", "pin": "GPIO23"},
+      "to": {"component": "buzzer", "pin": "GND"},
+      "wire": {"color": "brown", "gauge": "24AWG"},
+      "note": "Control via NPN transistor (not shown)"
+    }
+  ],
+  "notes": [
+    {
+      "id": "note1",
+      "position": {"x": 100, "y": 50},
+      "text": "FARMASSIST+ HORIZONTAL FARM KIT (H1)\nTarget Farms: Bafang (Cacao), Bertoua (Cassava), Maroua (Groundnut)\nMCU: ESP32-DevKitC-32E\nArchitecture: Bun + Hono + Prisma + MQTT\nGCD4F 2026 Competition"
+    },
+    {
+      "id": "note2",
+      "position": {"x": 100, "y": 550},
+      "text": "POWER NOTES:\n- Main: 12V 5A AC/DC adapter\n- Buck converter adjusted to 5V for ESP32 and relay module\n- 3.3V sourced from ESP32 onboard regulator\n- Total current draw: ~2.5A @ 12V"
+    },
+    {
+      "id": "note3",
+      "position": {"x": 400, "y": 550},
+      "text": "I2C BUS:\n- SDA: GPIO21 (with 4.7K pull-up to 3.3V)\n- SCL: GPIO22 (with 4.7K pull-up to 3.3V)\n- Devices: BH1750 (0x23)\n- Can add more I2C sensors to same bus"
+    },
+    {
+      "id": "note4",
+      "position": {"x": 700, "y": 550},
+      "text": "MQTT TOPICS:\nPublish: farmassist/{user_id}/{farm_id}/ARD_H001_001/telemetry\nSubscribe: farmassist/{user_id}/{farm_id}/ARD_H001_001/cmd\nBroker: localhost:1883 (dev) or :8883 (prod TLS)\nPublish Interval: 30 seconds"
+    },
+    {
+      "id": "note5",
+      "position": {"x": 200, "y": 550},
+      "text": "CALIBRATION REQUIRED:\n- Soil Moisture: Dry vs Saturated\n- Soil pH: pH 4.0, 7.0, 9.0 buffers\n- DHT22: Factory calibrated\n- BH1750: Factory calibrated"
+    },
+    {
+      "id": "note6",
+      "position": {"x": 600, "y": 550},
+      "text": "RS485 MODBUS:\n- Baud Rate: 9600\n- Data Bits: 8\n- Parity: None\n- Stop Bits: 1\n- NPK Sensor Address: 0x01 (default)\n- Enable GPIO18 high before TX"
+    }
+  ],
+  "metadata": {
+    "total_components": 12,
+    "estimated_cost_xaf": 33700,
+    "estimated_cost_usd": 55,
+    "power_consumption": "30W max",
+    "operating_temp": "-10 to 60°C",
+    "pcb_size": "150mm x 100mm",
+    "enclosure": "IP54 rated plastic box"
+  }
+}
